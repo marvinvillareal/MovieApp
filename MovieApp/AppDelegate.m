@@ -2,7 +2,7 @@
 //  AppDelegate.m
 //  MovieApp
 //
-//  Created by PHDELHA2(Marvin) on 06/03/2018.
+//  Created by (Marvin) on 06/03/2018.
 //  Copyright © 2018 MovieAppOrg. All rights reserved.
 //
 
@@ -19,6 +19,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    [splitViewController setPreferredDisplayMode:UISplitViewControllerDisplayModeAllVisible];
     UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
     navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
     splitViewController.delegate = self;

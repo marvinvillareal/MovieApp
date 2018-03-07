@@ -2,7 +2,7 @@
 //  MasterViewController.m
 //  MovieApp
 //
-//  Created by PHDELHA2(Marvin) on 06/03/2018.
+//  Created by (Marvin) on 06/03/2018.
 //  Copyright © 2018 MovieAppOrg. All rights reserved.
 //
 
@@ -11,42 +11,120 @@
 
 @interface MasterViewController ()
 
-@property NSMutableArray *objects;
+@property NSArray *objects;
 @end
+
+
+static NSString *CellIdentifier = @"Cell";
+static NSString *PlaceholderIdentifier = @"PlaceholderIdentifier";
 
 @implementation MasterViewController
 
+
+#pragma mark - Private Methods
+
+- (void)alertWithTitle:(NSString*)alertTitle andMessage:(NSString*)alertMessage {
+    UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:alertTitle message:alertMessage preferredStyle:UIAlertControllerStyleAlert];
+    [actionSheet addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        
+        [self dismissViewControllerAnimated:YES completion:^{
+        }];
+    }]];
+    
+    [self presentViewController:actionSheet animated:YES completion:nil];
+}
+
+
+- (void)fetchMovies {
+    NSURL *URL = [NSURL URLWithString:@"https://aacayaco.github.io/movielist/list_movies_page1.json"];
+    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+    
+    NSURLSession *session = [NSURLSession sharedSession];
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request
+                                            completionHandler:
+                                  ^(NSData *data, NSURLResponse *response, NSError *error) {
+                                      
+                                      if (!error) {
+                                          NSError *err = nil;
+                                          NSDictionary* json = [NSJSONSerialization JSONObjectWithData: data options: NSJSONReadingMutableContainers error: &err];
+                                          
+                                          NSArray *movies = json[@"data"][@"movies"];
+                                          NSMutableArray *myMov = [[NSMutableArray alloc] initWithCapacity:movies.count];
+                                          for (id movie in movies) {
+                                              Movie *myMovie = [[Movie alloc] initWithMovieDictionary:movie];
+                                              [myMov addObject:myMovie];
+                                          }
+                                          self.objects = myMov;
+                                          dispatch_async(dispatch_get_main_queue(), ^{
+                                              [self.tableView reloadData];
+                                          });
+
+                                          
+                                      } else {
+                                          [self alertWithTitle:@"Connection Error" andMessage:@"Server Failed. Try again later."];
+                                      }
+                                      
+
+
+                                  }];
+    
+    [task resume];
+}
+
+- (void)startDownloadBackdrop:(Movie *)movieItem forIndexPath:(NSIndexPath *)indexPath {
+    
+    NSURL *url = [NSURL URLWithString:movieItem.backdropURLString];
+    
+    
+    NSURLSessionDataTask *downloadTask =
+    [[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+      
+      movieItem.backdropImage = [UIImage imageWithData:data];
+      
+      dispatch_async(dispatch_get_main_queue(), ^{
+          MovieTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+          cell.movieImageView.image = movieItem.backdropImage;
+          [cell.activityIndicator stopAnimating];
+      });
+    }];
+    [downloadTask resume];
+    
+}
+
+- (void)getImageForVisibleRows {
+    if (self.objects.count > 0) {
+        NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
+        for (NSIndexPath *indexPath in visiblePaths)
+        {
+            Movie *movieItem = (self.objects)[indexPath.row];
+            
+            if (!movieItem.backdropImage) {
+                [self startDownloadBackdrop:movieItem forIndexPath:indexPath];
+            }
+        }
+    }
+}
+
+
+#pragma mark - UIViewController Lifecycle
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
-    self.navigationItem.leftBarButtonItem = self.editButtonItem;
-
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
-    self.navigationItem.rightBarButtonItem = addButton;
-    self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
 }
+
 
 
 - (void)viewWillAppear:(BOOL)animated {
     self.clearsSelectionOnViewWillAppear = self.splitViewController.isCollapsed;
     [super viewWillAppear:animated];
+    [self fetchMovies];
 }
 
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
-
-- (void)insertNewObject:(id)sender {
-    if (!self.objects) {
-        self.objects = [[NSMutableArray alloc] init];
-    }
-    [self.objects insertObject:[NSDate date] atIndex:0];
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-}
 
 
 #pragma mark - Segues
@@ -54,16 +132,16 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        NSDate *object = self.objects[indexPath.row];
+        Movie *movie = self.objects[indexPath.row];
         DetailViewController *controller = (DetailViewController *)[[segue destinationViewController] topViewController];
-        [controller setDetailItem:object];
+        [controller setDetailItem:movie];
         controller.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
         controller.navigationItem.leftItemsSupplementBackButton = YES;
     }
 }
 
 
-#pragma mark - Table View
+#pragma mark - Table View Delegate
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
@@ -76,28 +154,48 @@
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    
+    MovieTableViewCell *cell = nil;
+    
+    if (self.objects.count == 0 && indexPath.row == 0) {
+        cell = [tableView dequeueReusableCellWithIdentifier:PlaceholderIdentifier forIndexPath:indexPath];
+    } else {
+    
+        cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
 
-    NSDate *object = self.objects[indexPath.row];
-    cell.textLabel.text = [object description];
+        Movie *movie = self.objects[indexPath.row];
+        cell.title.text = movie.title;
+        cell.year.text = [NSString stringWithFormat: @"%d", movie.year];
+        cell.textLabel.backgroundColor = [UIColor clearColor];
+        
+        if (!movie.backdropImage) {
+            [cell.activityIndicator startAnimating];
+            if (self.tableView.dragging == NO && self.tableView.decelerating == NO)
+            {
+                [self startDownloadBackdrop:movie forIndexPath:indexPath];
+            }
+            cell.movieImageView.image = nil;
+        } else {
+            cell.movieImageView.image = movie.backdropImage;
+        }
+    }
     return cell;
 }
 
 
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
+#pragma mark - UIScrollViewDelegate:TableView
 
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self.objects removeObjectAtIndex:indexPath.row];
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    if (!decelerate) {
+        [self getImageForVisibleRows];
     }
 }
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    [self getImageForVisibleRows];
+}
+
+
 
 
 @end

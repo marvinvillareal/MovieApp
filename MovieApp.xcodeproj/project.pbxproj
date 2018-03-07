@@ -16,6 +16,8 @@
 		BF45A776204E9CA1005BD894 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF45A774204E9CA1005BD894 /* LaunchScreen.storyboard */; };
 		BF45A781204E9CA1005BD894 /* MovieAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BF45A780204E9CA1005BD894 /* MovieAppTests.m */; };
 		BF45A78C204E9CA1005BD894 /* MovieAppUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = BF45A78B204E9CA1005BD894 /* MovieAppUITests.m */; };
+		BF6C07AA204FB3C700ECBCC3 /* Movie.m in Sources */ = {isa = PBXBuildFile; fileRef = BF6C07A9204FB3C700ECBCC3 /* Movie.m */; };
+		BF6C07AD204FC86A00ECBCC3 /* MovieTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BF6C07AC204FC86A00ECBCC3 /* MovieTableViewCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +56,10 @@
 		BF45A787204E9CA1005BD894 /* MovieAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MovieAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF45A78B204E9CA1005BD894 /* MovieAppUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MovieAppUITests.m; sourceTree = "<group>"; };
 		BF45A78D204E9CA1005BD894 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BF6C07A9204FB3C700ECBCC3 /* Movie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Movie.m; path = classes/Movie.m; sourceTree = "<group>"; };
+		BF6C07AB204FC86A00ECBCC3 /* MovieTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MovieTableViewCell.h; path = classes/MovieTableViewCell.h; sourceTree = "<group>"; };
+		BF6C07AC204FC86A00ECBCC3 /* MovieTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MovieTableViewCell.m; path = classes/MovieTableViewCell.m; sourceTree = "<group>"; };
+		BF85E06D204FB14C0082D269 /* Movie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Movie.h; path = classes/Movie.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +110,7 @@
 		BF45A762204E9CA1005BD894 /* MovieApp */ = {
 			isa = PBXGroup;
 			children = (
+				BF85E06C204FB12E0082D269 /* Class */,
 				BF45A766204E9CA1005BD894 /* AppDelegate.h */,
 				BF45A767204E9CA1005BD894 /* AppDelegate.m */,
 				BF45A769204E9CA1005BD894 /* MasterViewController.h */,
@@ -143,6 +150,17 @@
 				BF45A78D204E9CA1005BD894 /* Info.plist */,
 			);
 			path = MovieAppUITests;
+			sourceTree = "<group>";
+		};
+		BF85E06C204FB12E0082D269 /* Class */ = {
+			isa = PBXGroup;
+			children = (
+				BF85E06D204FB14C0082D269 /* Movie.h */,
+				BF6C07A9204FB3C700ECBCC3 /* Movie.m */,
+				BF6C07AB204FC86A00ECBCC3 /* MovieTableViewCell.h */,
+				BF6C07AC204FC86A00ECBCC3 /* MovieTableViewCell.m */,
+			);
+			name = Class;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -212,7 +230,7 @@
 				TargetAttributes = {
 					BF45A75F204E9CA1005BD894 = {
 						CreatedOnToolsVersion = 8.3;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					BF45A77B204E9CA1005BD894 = {
 						CreatedOnToolsVersion = 8.3;
@@ -280,7 +298,9 @@
 			files = (
 				BF45A768204E9CA1005BD894 /* AppDelegate.m in Sources */,
 				BF45A76B204E9CA1005BD894 /* MasterViewController.m in Sources */,
+				BF6C07AA204FB3C700ECBCC3 /* Movie.m in Sources */,
 				BF45A765204E9CA1005BD894 /* main.m in Sources */,
+				BF6C07AD204FC86A00ECBCC3 /* MovieTableViewCell.m in Sources */,
 				BF45A76E204E9CA1005BD894 /* DetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -432,10 +452,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = MovieApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.marvinvillareal.MovieApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -443,10 +466,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = MovieApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.marvinvillareal.MovieApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -515,6 +541,7 @@
 				BF45A792204E9CA1005BD894 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		BF45A793204E9CA1005BD894 /* Build configuration list for PBXNativeTarget "MovieAppTests" */ = {
 			isa = XCConfigurationList;
@@ -523,6 +550,7 @@
 				BF45A795204E9CA1005BD894 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		BF45A796204E9CA1005BD894 /* Build configuration list for PBXNativeTarget "MovieAppUITests" */ = {
 			isa = XCConfigurationList;
@@ -531,6 +559,7 @@
 				BF45A798204E9CA1005BD894 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

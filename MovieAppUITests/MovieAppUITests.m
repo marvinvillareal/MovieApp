@@ -2,7 +2,7 @@
 //  MovieAppUITests.m
 //  MovieAppUITests
 //
-//  Created by PHDELHA2(Marvin) on 06/03/2018.
+//  Created by (Marvin) on 06/03/2018.
 //  Copyright © 2018 MovieAppOrg. All rights reserved.
 //
 
